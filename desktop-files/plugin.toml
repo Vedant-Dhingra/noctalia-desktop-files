@@ -1,0 +1,175 @@
+# Desktop Files — Noctalia v5 plugin.
+#
+# A desktop widget that mirrors the Desktop folder as a paginated icon grid.
+# Icons are rearranged with an arrange mode (click to pick up, click to drop):
+# desktop widgets get no press-and-drag (hover freezes while a button is held,
+# and ui.dragSource is panel-only), so the "drag" is pointer tracking between
+# two clicks. Hovering the left/right edge while carrying flips pages after a
+# delay; hovering a page dot jumps to that page. Layout persists per layout_id
+# under the plugin data dir.
+#
+# plugin_api 31: noctalia.getColor (role -> hex for the recolored SVG icons).
+# Lower levels used: closures in ui callbacks (9), graph pointer tracking (29),
+# runAsync argv (24), require (22), readFileAsync is not used.
+
+id = "vedantd/desktop-files"
+name = "Desktop Files"
+version = "1.0.0"
+plugin_api = 31
+author = "vedantd"
+license = "MIT"
+icon = "folders"
+description = "Shows your Desktop folder as a themed, paginated icon grid you can rearrange."
+tags = ["desktop", "files", "icons"]
+dependencies = ["xdg-utils", "file", "gio"]
+
+[[desktop_widget]]
+id = "desktop"
+entry = "desktop.luau"
+
+  # ── Source ──────────────────────────────────────────────────────────────────
+
+  [[desktop_widget.setting]]
+  key = "desktop_path"
+  type = "folder"
+  label_key = "settings.desktop_path.label"
+  description_key = "settings.desktop_path.description"
+  default = ""
+
+  [[desktop_widget.setting]]
+  key = "layout_id"
+  type = "string"
+  label_key = "settings.layout_id.label"
+  description_key = "settings.layout_id.description"
+  default = "default"
+  advanced = true
+
+  [[desktop_widget.setting]]
+  key = "show_hidden"
+  type = "bool"
+  label_key = "settings.show_hidden.label"
+  default = false
+
+  # ── Grid ────────────────────────────────────────────────────────────────────
+
+  [[desktop_widget.setting]]
+  key = "columns"
+  type = "int"
+  label_key = "settings.columns.label"
+  default = 8
+  min = 1
+  max = 32
+
+  [[desktop_widget.setting]]
+  key = "rows"
+  type = "int"
+  label_key = "settings.rows.label"
+  default = 5
+  min = 1
+  max = 24
+
+  [[desktop_widget.setting]]
+  key = "grid_size"
+  type = "int"
+  label_key = "settings.grid_size.label"
+  description_key = "settings.grid_size.description"
+  default = 96
+  min = 48
+  max = 256
+
+  [[desktop_widget.setting]]
+  key = "icon_size"
+  type = "int"
+  label_key = "settings.icon_size.label"
+  description_key = "settings.icon_size.description"
+  default = 48
+  min = 16
+  max = 192
+
+  [[desktop_widget.setting]]
+  key = "snap_to_grid"
+  type = "bool"
+  label_key = "settings.snap_to_grid.label"
+  description_key = "settings.snap_to_grid.description"
+  default = true
+
+  [[desktop_widget.setting]]
+  key = "edge_flip_delay_ms"
+  type = "int"
+  label_key = "settings.edge_flip_delay_ms.label"
+  description_key = "settings.edge_flip_delay_ms.description"
+  default = 600
+  min = 100
+  max = 3000
+
+  [[desktop_widget.setting]]
+  key = "double_click_ms"
+  type = "int"
+  label_key = "settings.double_click_ms.label"
+  default = 400
+  min = 150
+  max = 1000
+  advanced = true
+
+  # ── Appearance ──────────────────────────────────────────────────────────────
+
+  [[desktop_widget.setting]]
+  key = "background_color"
+  type = "color"
+  label_key = "settings.background_color.label"
+  default = "surface"
+
+  [[desktop_widget.setting]]
+  key = "background_opacity"
+  type = "double"
+  label_key = "settings.background_opacity.label"
+  default = 0.35
+  min = 0.0
+  max = 1.0
+
+  [[desktop_widget.setting]]
+  key = "folder_color"
+  type = "color"
+  label_key = "settings.folder_color.label"
+  default = "primary"
+
+  [[desktop_widget.setting]]
+  key = "file_icon_color"
+  type = "color"
+  label_key = "settings.file_icon_color.label"
+  default = "secondary"
+
+  [[desktop_widget.setting]]
+  key = "label_color"
+  type = "color"
+  label_key = "settings.label_color.label"
+  default = "on_surface"
+
+  [[desktop_widget.setting]]
+  key = "custom_folder_icon"
+  type = "file"
+  label_key = "settings.custom_folder_icon.label"
+  description_key = "settings.custom_icon.description"
+  default = ""
+  extensions = [".svg", ".png", ".jpg", ".jpeg", ".webp"]
+
+  [[desktop_widget.setting]]
+  key = "custom_file_icon"
+  type = "file"
+  label_key = "settings.custom_file_icon.label"
+  description_key = "settings.custom_icon.description"
+  default = ""
+  extensions = [".svg", ".png", ".jpg", ".jpeg", ".webp"]
+
+  [[desktop_widget.setting]]
+  key = "show_thumbnails"
+  type = "bool"
+  label_key = "settings.show_thumbnails.label"
+  default = true
+
+  [[desktop_widget.setting]]
+  key = "themed_type_icons"
+  type = "bool"
+  label_key = "settings.themed_type_icons.label"
+  description_key = "settings.themed_type_icons.description"
+  default = true

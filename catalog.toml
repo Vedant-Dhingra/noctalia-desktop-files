@@ -1,0 +1,12 @@
+[[plugin]]
+id           = "vedantd/desktop-files"
+name         = "Desktop Files"
+version      = "1.0.0"
+author       = "vedantd"
+license      = "MIT"
+icon         = "folders"
+description  = "Shows your Desktop folder as a themed, paginated icon grid you can rearrange."
+deprecated   = false
+plugin_api   = 31
+tags         = ["desktop", "files", "icons"]
+dependencies = ["xdg-utils", "file", "gio"]
