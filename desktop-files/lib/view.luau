@@ -24,6 +24,10 @@ local DOT = 10
 local DOT_HIT = 22
 local STEP = 4 -- free-placement quantum (px)
 
+-- The host reconciler keeps a prop's previous value when a re-render omits it,
+-- so conditional visual props must always carry an explicit "off" value.
+local CLEAR = "#00000000"
+
 -- Geometry shared by rendering and pointer math.
 function M.metrics(cfg)
   local g = cfg.gridSize
@@ -62,8 +66,8 @@ local function tile(ctx, m, item, opts)
     paddingV = 4,
     align = "center",
     radius = 8,
-    fill = opts.selected and "primary/0.25" or nil,
-    opacity = opts.opacity,
+    fill = opts.selected and "primary/0.25" or CLEAR,
+    opacity = opts.opacity or 1,
   }, {
     ui.image({
       path = res.path,
@@ -136,7 +140,7 @@ local function trackedTarget(ctx, m, cell, ox, oy)
   if right > 0 then
     table.insert(mid, tracker(ctx, cell, ox + m.tileW, oy, right, m.tileH))
   end
-  table.insert(children, ui.row({ width = g, height = m.tileH }, mid))
+  table.insert(children, ui.row({ width = g, height = m.tileH, align = "start" }, mid))
   local bottom = g - oy - m.tileH
   if bottom > 0 then
     table.insert(children, tracker(ctx, cell, 0, oy + m.tileH, g, bottom))
@@ -159,6 +163,11 @@ local function cellNode(ctx, m, idx, page, col, row)
     width = m.grid,
     height = m.grid,
     radius = 10,
+    align = "start",
+    justify = "start",
+    fill = CLEAR,
+    border = CLEAR,
+    borderWidth = 0,
     onClick = function() ctx.onCellClick(cell) end,
   }
   if carry ~= nil then
@@ -246,7 +255,7 @@ local function edgeNode(ctx, side, height)
     width = EDGE,
     height = height,
     radius = 6,
-    fill = dwelling and "primary/0.45" or (active and "primary/0.15" or nil),
+    fill = dwelling and "primary/0.45" or (active and "primary/0.15" or CLEAR),
     onHover = function(state) ctx.onEdgeHover(side, state == "true") end,
     onClick = function() ctx.onEdgeClick(side) end,
   }, {})
@@ -270,9 +279,9 @@ local function pagerNode(ctx, width)
         width = DOT,
         height = DOT,
         radius = DOT / 2,
-        fill = current and "primary" or (spare and "#00000000" or "on_surface/0.35"),
-        border = spare and "primary" or nil,
-        borderWidth = spare and 1 or nil,
+        fill = current and "primary" or (spare and CLEAR or "on_surface/0.35"),
+        border = spare and "primary" or CLEAR,
+        borderWidth = spare and 1 or 0,
       }),
     }))
   end
